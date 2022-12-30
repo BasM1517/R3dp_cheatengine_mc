@@ -24,6 +24,7 @@ public class TutorialMod implements ModInitializer {
     private static final Logger LOGGER = null;
 
     public static boolean flightenabled = false;
+    public static boolean botmovementenabled = false;
     public static boolean autofarmenabled = false;
     @Override
     public void onInitialize() {
@@ -44,6 +45,10 @@ public class TutorialMod implements ModInitializer {
     public static void toggleFlightButton() {
         // call the toggleFlight method of the TutorialMod Mixin class
         flightenabled = !flightenabled;
+    }
+    public static void toggleBotMovementButton() {
+        // call the toggleFlight method of the TutorialMod Mixin class
+        botmovementenabled = !botmovementenabled;
     }
     public static void toggleAutoFarmButton() {
         // call the toggleFlight method of the TutorialMod Mixin class
