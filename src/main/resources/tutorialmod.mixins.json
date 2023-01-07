@@ -9,7 +9,9 @@
     "ExampleMixin",
     "GameMenuScreenMixin",
     "Flightmixin",
-    "BotMovementMixin"
+    "ClientConnectionInvoker",
+    "LookandOnGroundMixin",
+    "FullMixin"
   ],
   "injectors": {
     "defaultRequire": 1
