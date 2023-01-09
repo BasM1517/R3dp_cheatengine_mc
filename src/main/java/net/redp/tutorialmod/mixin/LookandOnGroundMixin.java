@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LookandOnGroundMixin {
 
 
-    @Inject(method = "write", at = @At("RETURN"))
+    //@Inject(method = "write", at = @At("RETURN"))
     private void beforeWrite(PacketByteBuf buf, CallbackInfo ci) {
         buf.clear();
         buf.writeFloat(0.0f);
         buf.writeFloat(0.0f);
-        buf.writeByte(true ? 1 : 0);
+        buf.writeByte(1);
 
         TutorialModClient.logInfo(String.valueOf(buf.readFloat()));
         TutorialModClient.logInfo(String.valueOf(buf.readFloat()));

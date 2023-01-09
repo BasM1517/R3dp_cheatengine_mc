@@ -13,27 +13,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerMoveC2SPacket.Full.class)
 public class FullMixin {
 
-    static ClientPlayerEntity client = MinecraftClient.getInstance().player;
-    private static double oldx = 0.0d;
-    private static double oldz = 0.0d;
-    private static double xPlayer = client.getX();
-    private static double zPlayer = client.getZ();
+    private  ClientPlayerEntity client = MinecraftClient.getInstance().player;
+    private  double xPlayer = Math.round(client.getX());
+    private  double zPlayer = Math.round(client.getZ());
 
-
-    @Inject(method = "write", at = @At("RETURN"))
+    //@Inject(method = "write", at = @At("TAIL"))
     private void beforeWrite(PacketByteBuf buf, CallbackInfo ci) {
         // Modify the x and z fields of the PlayerMoveC2SPacket
         buf.clear();
-        if (xPlayer % 10 == 0.0 && zPlayer % 10 == 0.0){
+        long x = (long) (xPlayer * 1000) % 10;
+        long z = (long) (zPlayer * 1000) % 10;
+
+        if (x == 0 && z % 10 == 0){
+            TutorialModClient.logInfo("Fullmixin de goeie");
             buf.writeDouble(xPlayer);
             buf.writeDouble(client.getY());
             buf.writeDouble(zPlayer);
-            buf.writeFloat(0);
-            buf.writeFloat(0);
+            buf.writeFloat(client.headYaw);
+            buf.writeFloat(client.getPitch());
             buf.writeByte(true ? 1 : 0);
-            oldx = xPlayer;
-            oldz = zPlayer;
         }else{
+            TutorialModClient.logInfo("Fullmixin de foute");
             buf.writeDouble(0.0d);
             buf.writeDouble(60.0d);
             buf.writeDouble(0.0d);
@@ -41,8 +41,6 @@ public class FullMixin {
             buf.writeFloat(0);
             buf.writeByte(true ? 1 : 0);
         }
-
-
 
         TutorialModClient.logInfo(String.valueOf(buf.readDouble()));
         TutorialModClient.logInfo(String.valueOf(buf.readDouble()));

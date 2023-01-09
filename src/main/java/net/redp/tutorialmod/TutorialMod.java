@@ -1,23 +1,16 @@
 package net.redp.tutorialmod;
 
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.util.math.Direction;
@@ -40,6 +33,8 @@ public class TutorialMod implements ModInitializer {
 
     public static boolean togglexzcheck = false;
 
+    public static PacketByteBuf buf;
+
 
     @Override
     public void onInitialize() {
@@ -58,9 +53,7 @@ public class TutorialMod implements ModInitializer {
                     tick(player);
                 }
                 if(togglexzcheck){
-                    //setPlayerPosition(player,);
-                    movement(player);
-                    //checkxz(player);
+                    //setPlayerMovement(player);
                 }
 
             }
@@ -129,7 +122,7 @@ public class TutorialMod implements ModInitializer {
            //TutorialModClient.logInfo(String.valueOf(player.getX()));
 
            TutorialModClient.logInfo("x : " + String.valueOf(x) + " z : " + String.valueOf(z));
-       }else{
+       }else {
            TutorialModClient.logInfo("x : " + String.valueOf(x) + " z : " + String.valueOf(z));
        }
     }
@@ -141,27 +134,17 @@ public class TutorialMod implements ModInitializer {
 
         }
     }
-    public static void writeBuff(PlayerEntity player,Vec3d pos){
-        Packet packet = new PlayerMoveC2SPacket.PositionAndOnGround(pos.x, pos.y, pos.z, true);
-        PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
+    public static PacketByteBuf writeBuffExample(PacketByteBuf buf){
+        ClientPlayerEntity client = MinecraftClient.getInstance().player;
+        double xPlayer = Math.round(client.getX());
+        double zPlayer = Math.round(client.getZ());
 
-// Write the player's position to the packetByteBuf
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
-        packetByteBuf.writeDouble(x);
-        packetByteBuf.writeDouble(y);
-        packetByteBuf.writeDouble(z);
-
-// Write the player's look angles to the packetByteBuf
-
-// Write the "onGround" field to the packetByteBuf
-        boolean onGround = true;
-        packetByteBuf.writeBoolean(onGround);
-        //ServerPlayNetworking.send(PacketType.Server.CUSTOM_PAYLOAD, packetByteBuf, player.getServer(), NetworkDirection.PLAY_TO_SERVER);
-        //ServerPlayNetworking.send(ServerPlayerEntity player,1,packetByteBuf);
-        Identifier identifier = new Identifier("1");
-        ClientPlayNetworking.send(identifier,packetByteBuf);
+        buf.clear();
+        buf.writeDouble(xPlayer);
+        buf.writeDouble(client.getY());
+        buf.writeDouble(zPlayer);
+        buf.getUnsignedByte(true ? 1 : 0);
+        return buf;
     }
     public static void movement(PlayerEntity player){
         String direction = MinecraftClient.getInstance().player.getHorizontalFacing().toString();
@@ -187,7 +170,18 @@ public class TutorialMod implements ModInitializer {
                 break;
         }
     }
+    public void calculatenewposition(PlayerEntity player){
 
-}
+    }
+    public void setPlayerMovement(ClientPlayerEntity player) {
+        // Round the movement to the nearest hundredth
+        Vec3d currentPosition = player.getPos();
+        Vec3d targetPosition = new Vec3d(10, 0, 10);
+        Vec3d newMovement = targetPosition.subtract(currentPosition).normalize();
+        double x = Math.round(newMovement.getX() * 100.0) / 100.0;
+        double y = Math.round(newMovement.getY() * 100.0) / 100.0;
+        double z = Math.round(newMovement.getZ() * 100.0) / 100.0;
+        player.setVelocity(x, y, z);
+    }}
 //make it so that i can look which item i am holding
 
