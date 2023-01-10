@@ -17,7 +17,7 @@ public class FullMixin {
     private  double xPlayer = Math.round(client.getX());
     private  double zPlayer = Math.round(client.getZ());
 
-    //@Inject(method = "write", at = @At("TAIL"))
+    @Inject(method = "write", at = @At("TAIL"))
     private void beforeWrite(PacketByteBuf buf, CallbackInfo ci) {
         // Modify the x and z fields of the PlayerMoveC2SPacket
         buf.clear();
@@ -26,9 +26,9 @@ public class FullMixin {
 
         if (x == 0 && z % 10 == 0){
             TutorialModClient.logInfo("Fullmixin de goeie");
-            buf.writeDouble(xPlayer);
+            buf.writeDouble(Math.round(client.getX()));
             buf.writeDouble(client.getY());
-            buf.writeDouble(zPlayer);
+            buf.writeDouble(Math.round(client.getZ()));
             buf.writeFloat(client.headYaw);
             buf.writeFloat(client.getPitch());
             buf.writeByte(true ? 1 : 0);

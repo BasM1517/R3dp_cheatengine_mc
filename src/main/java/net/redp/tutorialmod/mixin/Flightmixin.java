@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class Flightmixin {
-    @Inject(method = "sendMovementPackets", at = @At("HEAD"), cancellable = true)
+    //@Inject(method = "sendMovementPackets", at = @At("HEAD"), cancellable = true)
     private void onSendMovementPackets(CallbackInfo ci) {
         // Get the player entity
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
