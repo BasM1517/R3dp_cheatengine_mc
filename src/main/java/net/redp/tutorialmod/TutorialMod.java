@@ -15,7 +15,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.redp.tutorialmod.mixin.ClientConnectionInvoker;
 
 import java.util.logging.Logger;
 
@@ -32,6 +31,8 @@ public class TutorialMod implements ModInitializer {
     public static boolean autofarmenabled = false;
 
     public static boolean togglexzcheck = false;
+
+    public static boolean cordsmanipulate = true;
 
     public static PacketByteBuf buf;
 
@@ -54,6 +55,7 @@ public class TutorialMod implements ModInitializer {
                 }
                 if(togglexzcheck){
                     //setPlayerMovement(player);
+                    player.setPos(Math.round(player.getX()),player.getY(),Math.round(player.getZ()));
                 }
 
             }
@@ -74,6 +76,15 @@ public class TutorialMod implements ModInitializer {
     public static void toggleAutoFarmButton() {
         // call the toggleFlight method of the TutorialMod Mixin class
         autofarmenabled = !autofarmenabled;
+    }
+    public static double getx() {
+        // call the toggleFlight method of the TutorialMod Mixin class
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        return player.getX();
+    }
+    public static double getz() {
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        return player.getZ();
     }
 
     public void tick(ClientPlayerEntity player){
@@ -103,13 +114,6 @@ public class TutorialMod implements ModInitializer {
             return "true";
         }
         return "false";
-    }
-    public static void sendPacket(Vec3d pos){
-        ClientPlayerEntity client = MinecraftClient.getInstance().player;
-        ClientConnectionInvoker conn =(ClientConnectionInvoker)client.networkHandler.getConnection();
-        TutorialModClient.logInfo(conn.toString());
-        Packet packet = new PlayerMoveC2SPacket.PositionAndOnGround(pos.x, pos.y, pos.z, true);
-        conn.sendIm(packet, null);
     }
     public static void checkxz(PlayerEntity player){
        double dx = player.getX();
@@ -147,28 +151,6 @@ public class TutorialMod implements ModInitializer {
         return buf;
     }
     public static void movement(PlayerEntity player){
-        String direction = MinecraftClient.getInstance().player.getHorizontalFacing().toString();
-        Vec3d pos = new Vec3d(player.getX(),player.getY(),player.getZ());
-        switch(direction) {
-            case "west":
-                // code block
-                TutorialModClient.logInfo(pos.toString());
-                TutorialModClient.logInfo(pos.add(0.1d,0.0d,0.0d).toString());
-                //player.handler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(pos.x, pos.y + 0.0625, pos.z, true));
-                //sendPacket(pos.add(0.1d,0.0d,0.0d));
-                TutorialMod.setPlayerPosition(player,pos.add(1.0d,0.0d,0.0d));
-
-                break;
-            case "east":
-                sendPacket(pos.subtract(0.1d,0.0d,0.0d));
-                break;
-            case "south":
-                sendPacket(pos.subtract(0.0d,0.0d,0.1d));
-                break;
-            case "north":
-                sendPacket(pos.add(0.0d,0.0d,0.1d));
-                break;
-        }
     }
     public void calculatenewposition(PlayerEntity player){
 

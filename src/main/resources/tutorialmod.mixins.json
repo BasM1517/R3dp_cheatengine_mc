@@ -9,7 +9,7 @@
     "ExampleMixin",
     "GameMenuScreenMixin",
     "Flightmixin",
-    "ClientConnectionInvoker",
+    "PlayerMoveMixin",
     "LookandOnGroundMixin",
     "FullMixin"
   ],

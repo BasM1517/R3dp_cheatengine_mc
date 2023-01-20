@@ -4,49 +4,33 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.redp.tutorialmod.PlayerMoveC2SPacketView;
+import net.redp.tutorialmod.TutorialMod;
 import net.redp.tutorialmod.TutorialModClient;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerMoveC2SPacket.Full.class)
-public class FullMixin {
-
-    private  ClientPlayerEntity client = MinecraftClient.getInstance().player;
-    private  double xPlayer = Math.round(client.getX());
-    private  double zPlayer = Math.round(client.getZ());
-
-    @Inject(method = "write", at = @At("TAIL"))
+public class FullMixin{
+    private ClientPlayerEntity client = MinecraftClient.getInstance().player;
+    @Inject(method = "write", at = @At("TAIL"),cancellable = true)
     private void beforeWrite(PacketByteBuf buf, CallbackInfo ci) {
-        // Modify the x and z fields of the PlayerMoveC2SPacket
-        buf.clear();
-        long x = (long) (xPlayer * 1000) % 10;
-        long z = (long) (zPlayer * 1000) % 10;
+        double xbefore = buf.readDouble();
+        double x = Math.round(xbefore);
+        double y = buf.readDouble();
+        double z = Math.round(buf.readDouble());
+        TutorialModClient.logInfo("xyz : " + x + "xbefore " + xbefore + " " + y + " " + z);
+        buf.setIndex(0,0);
 
-        if (x == 0 && z % 10 == 0){
-            TutorialModClient.logInfo("Fullmixin de goeie");
-            buf.writeDouble(Math.round(client.getX()));
-            buf.writeDouble(client.getY());
-            buf.writeDouble(Math.round(client.getZ()));
-            buf.writeFloat(client.headYaw);
-            buf.writeFloat(client.getPitch());
-            buf.writeByte(true ? 1 : 0);
-        }else{
-            TutorialModClient.logInfo("Fullmixin de foute");
-            buf.writeDouble(0.0d);
-            buf.writeDouble(60.0d);
-            buf.writeDouble(0.0d);
-            buf.writeFloat(0);
-            buf.writeFloat(0);
-            buf.writeByte(true ? 1 : 0);
+        buf.writeDouble(Math.round(x));
+        buf.writeDouble(y);
+        buf.writeDouble(Math.round(z));
+        buf.readDouble();
+        buf.readDouble();
+        buf.readDouble();
         }
-
-        TutorialModClient.logInfo(String.valueOf(buf.readDouble()));
-        TutorialModClient.logInfo(String.valueOf(buf.readDouble()));
-        TutorialModClient.logInfo(String.valueOf(buf.readDouble()));
-        TutorialModClient.logInfo(String.valueOf(buf.readFloat()));
-        TutorialModClient.logInfo(String.valueOf(buf.readFloat()));
-        TutorialModClient.logInfo(String.valueOf(buf.readUnsignedByte()));
     }
-}

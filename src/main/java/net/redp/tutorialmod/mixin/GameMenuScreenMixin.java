@@ -34,5 +34,7 @@ public abstract class GameMenuScreenMixin extends Screen{
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102 + 205, this.height / 4 + 24 + 32, 98, 20, Text.translatable("XZ check"), (button) -> {
             TutorialMod.toggleXZCheckButton();
         }));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102 + 205, this.height / 4 + 24 + 48, 98, 20, Text.translatable("Cords manipulate"), (button) -> {
+        }));
     }
 }
