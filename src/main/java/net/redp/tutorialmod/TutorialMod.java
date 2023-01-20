@@ -86,6 +86,10 @@ public class TutorialMod implements ModInitializer {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         return player.getZ();
     }
+    public static double roundTheCoordinate(double n) {
+        n = Math.round(n * 100) / 100d;  // Round to 1/100th
+        return Math.nextAfter(n, n + Math.signum(n));  // Fix floating point errors
+    }
 
     public void tick(ClientPlayerEntity player){
         if(player != null){

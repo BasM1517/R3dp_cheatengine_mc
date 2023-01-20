@@ -19,18 +19,21 @@ public class FullMixin{
     private ClientPlayerEntity client = MinecraftClient.getInstance().player;
     @Inject(method = "write", at = @At("TAIL"),cancellable = true)
     private void beforeWrite(PacketByteBuf buf, CallbackInfo ci) {
-        double xbefore = buf.readDouble();
-        double x = Math.round(xbefore);
+        double x = buf.readDouble();
         double y = buf.readDouble();
-        double z = Math.round(buf.readDouble());
-        TutorialModClient.logInfo("xyz : " + x + "xbefore " + xbefore + " " + y + " " + z);
-        buf.setIndex(0,0);
+        double z = buf.readDouble();
+        float yaw = buf.readFloat();
+        float pitch = buf.readFloat();
+        short onground = buf.readUnsignedByte();
 
-        buf.writeDouble(Math.round(x));
-        buf.writeDouble(y);
-        buf.writeDouble(Math.round(z));
-        buf.readDouble();
-        buf.readDouble();
-        buf.readDouble();
+
+            buf.writeDouble(Math.round(x));
+            buf.writeDouble(y);
+            buf.writeDouble(Math.round(z));
+            buf.writeFloat(yaw);
+            buf.writeFloat(pitch);
+            buf.writeByte(onground);
+        TutorialModClient.logInfo("Fullmixin radablebytes : " + String.valueOf(buf.readableBytes()) + " x : " + buf.readDouble() + " y : " + buf.readDouble() + " z : " + buf.readDouble());
+            //ci.cancel();
         }
     }
